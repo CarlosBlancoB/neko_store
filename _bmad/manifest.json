@@ -1,0 +1,14 @@
+{
+  "name": "neko-store-bmad",
+  "version": "1.0.0",
+  "description": "BMAD method scaffold for NEKO STORE React migration",
+  "phases": [
+    "discovery",
+    "architecture",
+    "implementation",
+    "testing",
+    "deployment"
+  ],
+  "modules": [],
+  "createdAt": "2026-06-07"
+}

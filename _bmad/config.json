@@ -1,0 +1,10 @@
+{
+  "projectName": "NEKO STORE",
+  "technologies": ["React", "TypeScript", "TailwindCSS", "Vite", "PWA"],
+  "methodology": "SpecDD",
+  "testingFramework": "Vitest + Playwright",
+  "stateManagement": "Zustand",
+  "buildTool": "Vite",
+  "styling": "TailwindCSS v4",
+  "pwa": true
+}
