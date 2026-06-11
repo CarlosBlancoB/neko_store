@@ -2,6 +2,17 @@
 
 Migración de vanilla JS → React + TypeScript + Vite + TailwindCSS v4 + Zustand + PWA.
 
+## Estado actual - 2026-06-10
+
+Fuente: revision CodeGraph + BMAD.
+
+- React/TypeScript/Vite/Zustand/PWA ya estan implementados como base funcional.
+- Backend Fastify/PostgreSQL existe con migraciones, seeds y rutas publicas/admin.
+- Admin, social mock, branding, CMS, carrusel, 2FA y configuracion WhatsApp estan adelantados.
+- Foco inmediato: QA gates, auth OTP cliente, reservas de stock, confirmacion manual SINPE, alertas internas y responsive hardening.
+- Para tareas activas, revisar primero `docs/backlog.md` -> "TODO activo inmediato".
+- Para estado real por feature, revisar `feature-audit.md`.
+
 ## Stack Objetivo
 | Capa | Tecnología |
 |------|-----------|
@@ -16,6 +27,7 @@ Migración de vanilla JS → React + TypeScript + Vite + TailwindCSS v4 + Zustan
 ## Documentos
 - `roadmap.md` — Plan de migración por fases
 - `backlog.md` — Backlog priorizado de tareas
+- `feature-audit.md` — Auditoria actual de features, riesgos y siguientes acciones
 - `architecture.md` — Arquitectura objetivo
 - `components.md` — Árbol de componentes
 - `data-flow.md` — Flujo de datos y stores

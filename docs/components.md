@@ -25,14 +25,14 @@
 
 ### `Navbar`
 **Ruta:** `src/components/layout/Navbar.tsx`
-**Responsabilidad:** Navegación principal, cart badge, theme toggle, drop alert, logo
+**Responsabilidad:** Navegación principal, cart badge, theme toggle, logo oficial y acciones de cuenta/carrito/notificaciones
 **Props:**
 ```typescript
 interface NavbarProps {}
 // Consume de stores
 ```
 **State usado:** `useUIStore` (isCartOpen toggle), `useCartStore` (item count), `useNotificationStore` (unread count), `useAuthStore` (isAuth)
-**Hijos:** `ThemeToggle`, `DropAlert`, `CartBadge` (inline)
+**Hijos:** `ThemeToggle`, `CartBadge` (inline)
 
 ### `Footer`
 **Ruta:** `src/components/layout/Footer.tsx`
@@ -242,6 +242,7 @@ interface AccountLoginProps {
 interface AccountDashboardProps {}
 ```
 **State usado:** `useAuthStore`, `useLoyaltyStore`
+**Notas de dominio:** Perfil base obligatorio (nombre, apellidos, edad, telefono). Campos opcionales en dashboard (correo, foto, direccion, cedula, 2FA).
 
 ### `StatsGrid`
 **Ruta:** `src/components/account/StatsGrid.tsx`
@@ -369,16 +370,14 @@ interface ContactCardProps {}
 ```
 **Render:** Iconos + info de contacto, enlaces clickeables
 
-### `IntlForm`
-**Ruta:** `src/components/contact/IntlForm.tsx`
-**Responsabilidad:** Formulario de contacto internacional con selector de país
-**Props:**
-```typescript
-interface IntlFormProps {
-  onSubmit: (data: ContactFormData) => void;
-}
-```
-**State local:** `formData`, `errors`, `countryCode`, `isSubmitting`
+### `ContactForm`
+**Ruta:** `src/components/contact/ContactForm.tsx`
+**Responsabilidad:** Formulario de contacto general conectado a `POST /api/contact`.
+**Persistencia:** Guarda en `contact_messages` y genera alerta admin `form_filled_admin`.
+
+### `ContactMessagesManager`
+**Ruta:** `src/components/admin/ContactMessagesManager.tsx`
+**Responsabilidad:** Bandeja admin para listar, filtrar y actualizar mensajes de contacto.
 
 ### `ContactInfoStrip`
 **Ruta:** `src/components/contact/ContactInfoStrip.tsx`
@@ -405,14 +404,49 @@ interface NotificationsPanelProps {
 **State usado:** `useNotificationStore`
 **Estados:** empty ("No hay notificaciones"), list (items con dismiss individual), clear all button
 
+### `AlertCenter`
+**Ruta:** `src/components/notifications/AlertCenter.tsx`
+**Responsabilidad:** Centro de alertas persistentes para cliente/admin con detalle, filtros y acciones
+**Props:**
+```typescript
+interface AlertCenterProps {
+  role: 'customer' | 'admin';
+}
+```
+**State usado:** `useNotificationStore` (alerts con TTL 7 dias)
+**Estados:** empty, list, detail, purge expired
+
 ### `DropAlert`
-**Ruta:** `src/components/notifications/DropAlert.tsx`
-**Responsabilidad:** Badge de alerta + dropdown preview en navbar
+**Ruta:** `src/components/layout/DropAlert.tsx`
+**Responsabilidad:** Banner superior de drop con countdown y cierre manual
 **Props:**
 ```typescript
 interface DropAlertProps {}
 ```
-**State usado:** `useNotificationStore` (unread count, latest)
+**State usado:** `useConfigStore` + `useTimer`
+**Nota responsive:** al ocultarse se desmonta y no debe dejar margen residual en navbar.
+
+### `PromotionsSection`
+**Ruta:** `src/components/catalog/PromotionsSection.tsx`
+**Responsabilidad:** Mostrar promociones y drops por tiempo limitado con recomendaciones por usuario
+**Props:**
+```typescript
+interface PromotionsSectionProps {
+  userId?: string;
+}
+```
+**State usado:** `usePromotionStore`, `useAuthStore`
+**Features:** countdown, estado activo/expirado, cards de recomendacion
+
+### `DropManager`
+**Ruta:** `src/components/admin/DropManager.tsx`
+**Responsabilidad:** Configurar drops y visibilidad del drop counter desde dashboard admin
+**Props:**
+```typescript
+interface DropManagerProps {}
+```
+**State usado:** `dropConfigStore`
+**Acciones:** activar/desactivar, editar copy, fechas y prioridad
 
 ---
 

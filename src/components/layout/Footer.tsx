@@ -9,22 +9,13 @@ export default function Footer() {
     <footer className='footer'>
       <div className='footer__inner'>
         <div className='footer__brand'>
-          <span className='logo-name'>NEKO STORE</span>
+          <img className='footer-logo-wordmark' src='/brand/neko-logo-text.png' alt='Neko Store' />
           <p id='footerTagline'>{config.storeTagline}</p>
-          <p className='footer-cr'>🇨🇷 San José, Costa Rica</p>
+          <p className='footer-cr'>🇨🇷 San Ramon de Alajuela, Costa Rica</p>
         </div>
         <div className='footer__links'>
-          <button className='nav-link' type='button'>
+          <button className='nav-link' onClick={() => navigate('/politica-envios')} type='button'>
             Política de envíos
-          </button>
-          <button className='nav-link' type='button'>
-            Devoluciones
-          </button>
-          <button className='nav-link' type='button'>
-            Términos
-          </button>
-          <button className='nav-link' onClick={() => navigate('/contacto')} type='button'>
-            Contacto Internacional
           </button>
         </div>
         <div className='footer__social'>
@@ -47,7 +38,8 @@ export default function Footer() {
         </div>
       </div>
       <div className='footer__copy'>
-        © 2025 Neko Store · San José, Costa Rica · Todos los derechos reservados.
+        © {new Date().getFullYear()} Neko Store · San Ramon de Alajuela, Costa Rica · Todos los
+        derechos reservados.
       </div>
     </footer>
   )

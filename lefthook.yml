@@ -1,25 +1,12 @@
 pre-commit:
   parallel: true
   commands:
-    biome-check:
-      glob: "*.{ts,tsx,js,jsx,json,css,md}"
-      run: npx @biomejs/biome check --write --staged --no-errors-on-unmatched {staged_files}
-      stage_fixed: true
+    biome:
+      glob: '*.{ts,tsx,js,jsx,json,md}'
+      run: npx @biomejs/biome check --no-errors-on-unmatched {staged_files}
     typecheck:
-      glob: "*.{ts,tsx}"
-      run: npx tsc --noEmit
-      stage_fixed: false
-
-pre-push:
-  parallel: true
-  commands:
-    typecheck:
+      glob: '*.{ts,tsx}'
       run: npx tsc --noEmit
     test:
-      run: npx vitest run --passWithNoTests
-
-commit-msg:
-  commands:
-    lint-commit:
-      run: |
-        echo "$(cat {1})" | grep -qE '^(feat|fix|chore|docs|refactor|test|style|perf|ci|build|revert)(\(.+\))?!?: .{1,72}'
+      glob: '*.{ts,tsx}'
+      run: npx vitest run --reporter=verbose

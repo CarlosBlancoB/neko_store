@@ -1,5 +1,7 @@
 import QRCode from '@/components/shared/QRCode'
+import { usePushSubscription } from '@/hooks/usePushSubscription'
 import { useBrandingStore } from '@/stores/brandingStore'
+import { useConfigStore } from '@/stores/configStore'
 import { useWAConfigStore } from '@/stores/waConfigStore'
 
 const CUSTOMER_TYPES = [
@@ -24,10 +26,57 @@ export default function NotificationsConfig() {
   const toggleAdminType = useWAConfigStore((s) => s.toggleAdminType)
   const setAdminPhone = useWAConfigStore((s) => s.setAdminPhone)
   const brandingConfig = useBrandingStore((s) => s.config)
+  const siteConfig = useConfigStore((s) => s.config)
+  const updateSiteConfig = useConfigStore((s) => s.updateConfig)
+  const push = usePushSubscription()
 
   return (
     <div className='branding-config'>
       <h2>Notificaciones WhatsApp</h2>
+
+      <section className='branding-section'>
+        <h3>Push PWA para admin</h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: 12 }}>
+          Activa este dispositivo para recibir alertas del panel, incluyendo codigos OTP pendientes.
+        </p>
+        <button
+          className='btn-primary btn-small'
+          type='button'
+          onClick={push.subscribe}
+          disabled={push.loading}
+        >
+          {push.loading ? 'Activando...' : 'Activar push en este dispositivo'}
+        </button>
+        {push.status && (
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: 10 }}>
+            {push.status}
+          </p>
+        )}
+      </section>
+
+      <section className='branding-section'>
+        <h3>Drop counter</h3>
+        <label className='branding-toggle'>
+          <input
+            type='checkbox'
+            checked={siteConfig.dropActive}
+            onChange={(e) => updateSiteConfig({ dropActive: e.target.checked })}
+          />
+          Mostrar barra de drop en el sitio
+        </label>
+        <label className='branding-field'>
+          Titulo del drop
+          <input
+            type='text'
+            value={siteConfig.dropTitle}
+            onChange={(e) => updateSiteConfig({ dropTitle: e.target.value })}
+            placeholder='Shadow Bloom'
+          />
+        </label>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: 10 }}>
+          Estilo WordPress: cambios visibles de inmediato en esta sesion del dashboard.
+        </p>
+      </section>
 
       <section className='branding-section'>
         <h3>Número del admin</h3>

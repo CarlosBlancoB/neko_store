@@ -74,6 +74,8 @@ export const cmsApi = {
         code,
       }),
     refresh: () => api.post<{ token: string }>('/customer-auth/refresh'),
+    setPassword: (password: string) =>
+      api.post<{ ok: boolean }>('/customer-auth/password', { password }),
   },
 }
 

@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import LoyaltyCard from '@/components/loyalty/LoyaltyCard'
+import { cmsApi } from '@/services/cmsApi'
 import { useAuthStore } from '@/stores/authStore'
 import { formatCRPhone } from '@/utils/formatters'
 import AccountTabs from './AccountTabs'
@@ -8,22 +9,36 @@ import StatsGrid from './StatsGrid'
 
 export default function AccountDashboard() {
   const getCurrentCustomer = useAuthStore((s) => s.getCurrentCustomer)
+  const fetchCurrentCustomer = useAuthStore((s) => s.fetchCurrentCustomer)
   const logout = useAuthStore((s) => s.logout)
   const customer = getCurrentCustomer()
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [password, setPassword] = useState('')
+  const [passwordStatus, setPasswordStatus] = useState('')
+
+  useEffect(() => {
+    fetchCurrentCustomer().catch(() => logout())
+  }, [fetchCurrentCustomer, logout])
 
   if (!customer) return null
+
+  const passwordLevel =
+    password.length >= 6 && /[A-Za-z]/.test(password) && /\d/.test(password)
+      ? 'fuerte'
+      : password.length >= 6
+        ? 'medio'
+        : 'bajo'
 
   const tabs = [
     {
       id: 'dashboard',
       label: 'Dashboard',
-      icon: '🖤',
+      icon: 'NEKO',
       content: (
         <div className='account-grid'>
           <StatsGrid customer={customer} />
           <div className='account-orders'>
-            <h3 className='account-section-title'>Órdenes Recientes</h3>
+            <h3 className='account-section-title'>Ordenes Recientes</h3>
             <OrderHistory orders={customer.orders} />
           </div>
         </div>
@@ -32,8 +47,54 @@ export default function AccountDashboard() {
     {
       id: 'loyalty',
       label: 'Lealtad',
-      icon: '⭐',
+      icon: '*',
       content: <LoyaltyCard />,
+    },
+    {
+      id: 'security',
+      label: 'Seguridad',
+      icon: '2FA',
+      content: (
+        <div className='account-security'>
+          <h3 className='account-section-title'>Seguridad de cuenta</h3>
+          <p className='login-desc'>
+            Tu ingreso como cliente siempre usa OTP por WhatsApp. La sesion queda guardada por 30
+            dias en este dispositivo.
+          </p>
+          <div className='form-group'>
+            <label htmlFor='customer-password'>Contrasena opcional</label>
+            <input
+              id='customer-password'
+              type='password'
+              value={password}
+              minLength={6}
+              maxLength={8}
+              autoComplete='new-password'
+              onChange={(e) => setPassword(e.target.value.slice(0, 8))}
+              placeholder='6 a 8 caracteres'
+            />
+          </div>
+          <p className='password-strength'>Nivel: {passwordLevel}</p>
+          <button
+            className='btn-primary btn-small'
+            type='button'
+            disabled={password.length < 6}
+            onClick={async () => {
+              setPasswordStatus('')
+              try {
+                await cmsApi.customerAuth.setPassword(password)
+                setPassword('')
+                setPasswordStatus('Contrasena guardada.')
+              } catch (err) {
+                setPasswordStatus(err instanceof Error ? err.message : 'No se pudo guardar.')
+              }
+            }}
+          >
+            Guardar contrasena
+          </button>
+          {passwordStatus && <p className='login-desc'>{passwordStatus}</p>}
+        </div>
+      ),
     },
   ]
 
@@ -61,7 +122,7 @@ export default function AccountDashboard() {
             }}
             type='button'
           >
-            Cerrar sesión
+            Cerrar sesion
           </button>
         </div>
       </div>

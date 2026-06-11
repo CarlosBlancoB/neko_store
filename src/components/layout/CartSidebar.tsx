@@ -1,8 +1,8 @@
+import ProductImage from '@/components/shared/ProductImage'
 import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
 import { useConfigStore } from '@/stores/configStore'
 import { useUIStore } from '@/stores/uiStore'
-import { picsumUrl } from '@/utils/formatters'
 
 export default function CartSidebar() {
   const {
@@ -14,7 +14,6 @@ export default function CartSidebar() {
     getSubtotal,
     getDiscount,
     getTotal,
-    getItemCount,
   } = useCartStore()
   const isOpen = useUIStore((s) => s.isCartOpen)
   const toggleCart = useUIStore((s) => s.toggleCart)
@@ -26,7 +25,6 @@ export default function CartSidebar() {
   const subtotal = getSubtotal()
   const discount = getDiscount(customer?.points ?? 0)
   const total = getTotal(customer?.points ?? 0)
-  const _count = getItemCount()
 
   return (
     <>
@@ -36,7 +34,11 @@ export default function CartSidebar() {
         type='button'
         aria-label='Cerrar carrito'
       />
-      <div className={`cart-sidebar ${isOpen ? 'open' : ''}`}>
+      <div
+        className={`cart-sidebar ${isOpen ? 'open' : ''}`}
+        role='dialog'
+        aria-label='Carrito de compras'
+      >
         <div className='cart-header'>
           <h3>Tu Armario Oscuro</h3>
           <button onClick={toggleCart} type='button'>
@@ -67,10 +69,12 @@ export default function CartSidebar() {
             items.map((item, i) => (
               <div key={`${item.product.id}-${item.size}`} className='cart-item'>
                 <div className='cart-item__img'>
-                  <img
-                    src={picsumUrl(item.product.imgSeed, 144, 176)}
+                  <ProductImage
+                    seed={item.product.imgSeed}
                     alt={item.product.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    width={144}
+                    height={176}
+                    className='cart-item__img-tag'
                   />
                 </div>
                 <div className='cart-item__details'>
@@ -129,7 +133,7 @@ export default function CartSidebar() {
                       checked={shippingCost === 5}
                       onChange={() => setShipping(5, 'Envío estándar')}
                     />{' '}
-                    Estándar <strong>$5</strong>
+                    Estándar <strong>{config.currencySymbol}5</strong>
                   </label>
                   <label>
                     <input
@@ -139,7 +143,7 @@ export default function CartSidebar() {
                       checked={shippingCost === 12}
                       onChange={() => setShipping(12, 'Envío express')}
                     />{' '}
-                    Express <strong>$12</strong>
+                    Express <strong>{config.currencySymbol}12</strong>
                   </label>
                 </div>
               </div>
@@ -161,7 +165,7 @@ export default function CartSidebar() {
               </div>
             </div>
             <button className='btn-primary btn-full' onClick={openCheckout} type='button'>
-              Confirmar por WhatsApp
+              Reservar pedido
             </button>
           </div>
         )}

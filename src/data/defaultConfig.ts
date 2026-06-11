@@ -8,7 +8,7 @@ export const DEFAULT_CONFIG: StoreConfig = {
   intlContactEmail: 'international@nekostore.cr',
   storeName: 'NEKO STORE',
   storeTagline: 'Moda gótica. Alma oscura.',
-  currencySymbol: '$',
+  currencySymbol: '₡',
   dropActive: true,
   dropTitle: 'Shadow Bloom',
 }

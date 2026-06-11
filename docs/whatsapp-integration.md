@@ -23,11 +23,11 @@
 ```
 
 **Principios:**
-- Sin API key ni dependencias externas (usa deep links públicos `wa.me`)
-- Sin backend — toda la lógica es frontend
-- El pedido se genera como mensaje de texto estructurado
-- El admin recibe el mensaje y confirma manualmente
-- En el futuro: migrar a WhatsApp Business API
+- Base operativa sin API externa: deep links `wa.me` + alertas internas en app
+- Flujo de negocio debe funcionar aun sin WhatsApp Business
+- El pedido se genera como mensaje de texto estructurado y crea reserva temporal de stock
+- Confirmación de venta siempre requiere validación admin de comprobante
+- WhatsApp Business es capa opcional de automatización, no dependencia obligatoria
 
 ---
 
@@ -113,13 +113,31 @@ Preview del mensaje que se va a enviar:
 🦇 Gracias por tu compra 🦇
 ```
 
-### Step 4: Confirm → Open WhatsApp
+### Step 4: Confirm → Open WhatsApp + Reserve Stock
 ```
 Usuario click "Confirmar y enviar"
   → generateWhatsAppLink(STORE_PHONE, encodedMessage)
   → window.open(link, '_blank')
+  → orderStore.create({ status: 'pending_payment' })
+  → inventoryStore.reserveStock(orderId, items, ttl)
   → useCartStore.clearCart()
+  → notificationStore.pushAlert('admin', 'new_order_pending_payment')
   → useNotificationStore.addNotification('success', 'Pedido enviado')
+```
+
+### Step 5: Payment Proof Verification (Admin)
+```
+Cliente envia comprobante SINPE por WhatsApp
+  → Admin abre alerta en dashboard
+  → Revisa comprobante y codigo de transferencia
+  → Si valido:
+      order.status = 'paid_verified' -> 'completed'
+      inventoryStore.commitReservedStock(orderId)
+      enviar confirmacion al cliente
+    Si invalido:
+      order.status = 'payment_rejected'
+      inventoryStore.releaseReservedStock(orderId)
+      solicitar correccion al cliente
 ```
 
 ---
@@ -295,8 +313,6 @@ Asunto: Nuevo Pedido - NEKO STORE - [Nombre Cliente]
 Cuerpo: (mismo contenido que el template de WhatsApp)
 ```
 
----
-
 ## WhatsApp Business API (Future)
 
 ### Notas de Integración Futura
@@ -307,12 +323,11 @@ Cuerpo: (mismo contenido que el template de WhatsApp)
 3. Aprobación de templates por Facebook
 4. Webhook para recibir mensajes entrantes
 
-**Cambios necesarios:**
-- Reemplazar deep links por API calls
-- Implementar webhook endpoint (backend)
-- Base de datos para pedidos
-- Sistema de notificaciones automáticas
-- Confirmación de entrega automática
+**Cambios necesarios (modo opcional):**
+- Mantener deep links como fallback
+- Implementar webhook endpoint (backend) para lectura de mensajes
+- Detectar patrones de comprobante y crear alertas automáticas al admin
+- No eliminar la confirmacion manual final de venta
 
 **Arquitectura futura:**
 ```

@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*.png'],
+      includeAssets: ['icons/*.svg'],
       manifest: {
         name: 'NEKO STORE — Gótica • Oscura • Única',
         short_name: 'NEKO',
@@ -22,14 +22,18 @@ export default defineConfig({
         lang: 'es',
         start_url: '/',
         icons: [
-          { src: 'icons/icon-48x48.png', sizes: '48x48', type: 'image/png' },
-          { src: 'icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
-          { src: 'icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-48x48.svg', sizes: '48x48', type: 'image/svg+xml' },
+          { src: 'icons/icon-96x96.svg', sizes: '96x96', type: 'image/svg+xml' },
+          { src: 'icons/icon-192x192.svg', sizes: '192x192', type: 'image/svg+xml' },
+          { src: 'icons/icon-512x512.svg', sizes: '512x512', type: 'image/svg+xml' },
         ],
       },
       workbox: {
+        importScripts: ['sw-push.js'],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globIgnores: ['**/brand/*.png'],
+        navigateFallback: '/offline.html',
+        navigateFallbackDenylist: [/\/api\//],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/images\.unsplash\.com\/.*/i,

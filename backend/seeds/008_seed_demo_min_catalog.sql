@@ -1,0 +1,178 @@
+-- Catalogo inicial minimo para QA/staging. Borrar antes de produccion final junto con cuentas de prueba.
+-- IDs con prefijo demo-* solo para limpieza tecnica segura; no se muestran en la tienda.
+INSERT INTO categories (id, name, slug) VALUES
+  ('vestidos', 'Vestidos', 'vestidos'),
+  ('tops', 'Tops', 'tops'),
+  ('conjuntos', 'Conjuntos', 'conjuntos'),
+  ('accesorios', 'Accesorios', 'accesorios')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO products (id, name, price, category_id, description, images, sizes, badge, points, stock, active) VALUES
+  (
+    'demo-vestido-01',
+    'Vestido Sombra de Medianoche',
+    44500,
+    'vestidos',
+    'Vestido negro en terciopelo suave, manga larga y caida fluida para noche o evento.',
+    '["https://images.unsplash.com/photo-1566206091558-7f218b696731?w=900&h=1200&fit=crop&q=80"]',
+    '["XS","S","M","L","XL"]',
+    '',
+    89,
+    8,
+    TRUE
+  ),
+  (
+    'demo-vestido-02',
+    'Vestido Encaje Catedral',
+    52000,
+    'vestidos',
+    'Encaje negro sobre forro comodo, cuello alto y silueta elegante de inspiracion gotica.',
+    '["https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=900&h=1200&fit=crop&q=80"]',
+    '["S","M","L"]',
+    '',
+    104,
+    6,
+    TRUE
+  ),
+  (
+    'demo-vestido-03',
+    'Vestido Rosa Oscura',
+    57500,
+    'vestidos',
+    'Saten vino profundo con detalles negros para un look elegante de noche.',
+    '["https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=900&h=1200&fit=crop&q=80"]',
+    '["S","M","L","XL"]',
+    '',
+    115,
+    5,
+    TRUE
+  ),
+  (
+    'demo-top-01',
+    'Corset Noche Velvet',
+    32500,
+    'tops',
+    'Corset negro de terciopelo con ajuste posterior y estructura comoda.',
+    '["https://images.unsplash.com/photo-1621784562877-7e18e06e0e4b?w=900&h=1200&fit=crop&q=80"]',
+    '["S","M","L"]',
+    '',
+    65,
+    10,
+    TRUE
+  ),
+  (
+    'demo-top-02',
+    'Top Malla Eclipse',
+    24000,
+    'tops',
+    'Top de malla negra para capas, con manga larga y textura ligera.',
+    '["https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=900&h=1200&fit=crop&q=80"]',
+    '["XS","S","M","L"]',
+    '',
+    48,
+    14,
+    TRUE
+  ),
+  (
+    'demo-top-03',
+    'Blusa Manga Fantasma',
+    27500,
+    'tops',
+    'Blusa negra con mangas amplias y acabado semitransparente.',
+    '["https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=900&h=1200&fit=crop&q=80"]',
+    '["S","M","L","XL"]',
+    '',
+    55,
+    12,
+    TRUE
+  ),
+  (
+    'demo-conjunto-01',
+    'Conjunto Ritual Urbano',
+    68000,
+    'conjuntos',
+    'Top estructurado y falda midi negra para un look completo.',
+    '["https://images.unsplash.com/photo-1509631179647-0177331693ae?w=900&h=1200&fit=crop&q=80"]',
+    '["XS","S","M","L"]',
+    '',
+    136,
+    6,
+    TRUE
+  ),
+  (
+    'demo-conjunto-02',
+    'Set Sastre Shadow',
+    82500,
+    'conjuntos',
+    'Blazer negro y pantalon palazzo para un look completo de noche.',
+    '["https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=900&h=1200&fit=crop&q=80"]',
+    '["S","M","L"]',
+    '',
+    165,
+    4,
+    TRUE
+  ),
+  (
+    'demo-conjunto-03',
+    'Falda y Corset Dusk',
+    76000,
+    'conjuntos',
+    'Corset satinado con falda lapiz para una silueta oscura y elegante.',
+    '["https://images.unsplash.com/photo-1518611012118-696072aa579a?w=900&h=1200&fit=crop&q=80"]',
+    '["XS","S","M","L"]',
+    '',
+    152,
+    5,
+    TRUE
+  ),
+  (
+    'demo-accesorio-01',
+    'Choker Luna Negra',
+    12000,
+    'accesorios',
+    'Gargantilla de terciopelo negro con dije lunar plateado.',
+    '["https://images.unsplash.com/photo-1573408301185-9519f94815b0?w=900&h=1200&fit=crop&q=80"]',
+    '["Unico"]',
+    '',
+    24,
+    18,
+    TRUE
+  ),
+  (
+    'demo-accesorio-02',
+    'Anillo Onyx Gate',
+    17000,
+    'accesorios',
+    'Anillo plateado con piedra negra disponible en varias tallas.',
+    '["https://images.unsplash.com/photo-1606768666853-403c90c981ad?w=900&h=1200&fit=crop&q=80"]',
+    '["6","7","8","9"]',
+    '',
+    34,
+    15,
+    TRUE
+  ),
+  (
+    'demo-accesorio-03',
+    'Cinturon Cadena Noir',
+    19000,
+    'accesorios',
+    'Cinturon de cadena oscura ajustable para completar outfits.',
+    '["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=900&h=1200&fit=crop&q=80"]',
+    '["S","M","L"]',
+    '',
+    38,
+    16,
+    TRUE
+  )
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  price = EXCLUDED.price,
+  category_id = EXCLUDED.category_id,
+  description = EXCLUDED.description,
+  images = EXCLUDED.images,
+  sizes = EXCLUDED.sizes,
+  badge = EXCLUDED.badge,
+  points = EXCLUDED.points,
+  stock = EXCLUDED.stock,
+  active = EXCLUDED.active,
+  updated_at = NOW();

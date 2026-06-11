@@ -7,11 +7,14 @@ export interface Size {
 }
 
 export interface Product {
-  id: number
+  id: string | number
   name: string
   category: Category
+  categoryId?: string
   price: number
   imgSeed: string
+  imageUrl?: string
+  images?: string[]
   imgSeedAlt?: string
   sizes: string[]
   description: string
@@ -19,4 +22,9 @@ export interface Product {
   isNew?: boolean
   points: number
   featured?: boolean
+  featuredSortOrder?: number
+  stock?: number
+  active?: boolean
+  costPrice?: number
+  lowStockThreshold?: number
 }

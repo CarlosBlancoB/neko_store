@@ -1,0 +1,10 @@
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'customer';
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS tier TEXT NOT NULL DEFAULT 'MORTAL';
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS address TEXT DEFAULT '';
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS total_spent NUMERIC(10,2) NOT NULL DEFAULT 0;
+
+UPDATE customers
+SET tier = UPPER(REPLACE(COALESCE(tier_id, 'mortal'), '_', ' '))
+WHERE tier IS NULL OR tier = '';
+
+CREATE INDEX IF NOT EXISTS idx_customers_role ON customers(role);

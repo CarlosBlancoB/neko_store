@@ -536,3 +536,30 @@ Build: _______________
 Result: [PASS / FAIL]
 Notes: _______________
 ```
+## QA activo - 2026-06-10
+
+Antes de cerrar el bloque actual:
+- [x] `npx biome check src/` - pasa, 133 archivos
+- [x] `npm run typecheck` - pasa
+- [x] `npm run test:run` - pasa, 18 archivos / 125 tests
+- [x] `npm run build` - pasa, Vite + PWA
+- [ ] Smoke responsive 320px, 390px, 768px, 1024px, 1366px, 1536px
+- [ ] Smoke checkout: catalogo -> carrito -> checkout -> WhatsApp/deep link
+- [ ] Smoke cuenta: registro/login OTP -> dashboard -> logout
+- [ ] Smoke admin: branding, notificaciones, contenido, carrusel, campanas, rewards, 2FA
+- [ ] Smoke PWA: instalar, offline fallback, update prompt
+
+Riesgo principal: hay mucha funcionalidad implementada sin evidencia reciente de gates completos. El siguiente cierre debe producir resultados de comandos y bugs concretos, no solo mas especificacion.
+
+## Estado QA de handoff - 2026-06-10
+
+Antes de seguir con paginas/rutas:
+- [ ] Arreglar formato Biome en `AdminHome.tsx`, `OrdersManager.tsx`, `AdminPage.tsx`, `cmsApi.ts`.
+- [ ] Re-ejecutar `npx biome check src/`.
+- [ ] Re-ejecutar `npm run typecheck`.
+- [ ] Smoke con backend vivo: admin login sin 2FA, setup 2FA, logout, login con 2FA.
+- [ ] Smoke admin: Inicio, Productos, Pedidos, Alertas, Contenido, Carrusel, Marca, 2FA.
+- [ ] Smoke cliente: OTP, perfil desde API, ordenes desde API.
+- [ ] Smoke checkout: crear orden real, validar estado y alertas.
+
+Nota: la auditoria de paginas/rutas/CTAs queda explicitamente despues de cerrar admin/auth/checkout.

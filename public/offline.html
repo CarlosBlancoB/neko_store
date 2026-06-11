@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEKO STORE — Sin conexión</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #050508;
+      color: #c9b7a3;
+      font-family: 'Georgia', serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      text-align: center;
+      padding: 2rem;
+    }
+    .offline-container { max-width: 480px; }
+    h1 { color: #d4af37; font-size: 1.5rem; margin-bottom: 1rem; letter-spacing: 2px; }
+    p { color: #7a6b5a; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.5rem; }
+    .moon { font-size: 3rem; margin-bottom: 1.5rem; opacity: 0.6; }
+    hr { border: none; border-top: 1px solid #2a2018; margin: 1.5rem 0; }
+    .retry-btn {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      border: 1px solid #d4af37;
+      color: #d4af37;
+      background: transparent;
+      text-decoration: none;
+      letter-spacing: 2px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .retry-btn:hover { background: #d4af37; color: #050508; }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="moon">&#9790;</div>
+    <h1>SIN CONEXIÓN</h1>
+    <p>La noche está en calma y no hay señal.</p>
+    <p>Vuelve a intentar cuando tengas conexión para seguir explorando nuestro catálogo oscuro.</p>
+    <hr />
+    <button class="retry-btn" onclick="location.reload()">REINTENTAR</button>
+  </div>
+</body>
+</html>

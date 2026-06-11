@@ -1,4 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useInstallPrompt } from '@/hooks/useInstallPrompt'
+import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
 import { useNotificationStore } from '@/stores/notificationStore'
 import { useUIStore } from '@/stores/uiStore'
@@ -9,88 +11,24 @@ const NAV_LINKS = [
   { path: '/tienda', label: 'Tienda', section: 'shop' },
   { path: '/recompensas', label: 'Recompensas', section: 'loyalty' },
   { path: '/contacto', label: 'Contacto', section: 'contact' },
-  { path: '/nosotras', label: 'Nosotras', section: 'about' },
+  { path: '/nosotros', label: 'Nosotros', section: 'about' },
 ]
 
 export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { canInstall, install } = useInstallPrompt()
+  const token = useAuthStore((s) => s.token)
   const itemCount = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0))
   const unreadCount = useNotificationStore((s) => s.unreadCount())
   const toggleCart = useUIStore((s) => s.toggleCart)
   const toggleNotif = useUIStore((s) => s.toggleNotif)
 
   return (
-    <nav
-      className='navbar'
-      style={{
-        padding: '0 48px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}
-    >
+    <nav className='navbar' aria-label='Navegación principal'>
       <button className='navbar__logo' onClick={() => navigate('/')} type='button'>
-        <svg
-          className='logo-svg'
-          viewBox='0 0 80 70'
-          xmlns='http://www.w3.org/2000/svg'
-          aria-hidden='true'
-        >
-          <ellipse
-            cx='40'
-            cy='48'
-            rx='20'
-            ry='16'
-            fill='var(--logo-fill)'
-            stroke='#c9a96e'
-            strokeWidth='0.5'
-          />
-          <ellipse
-            cx='40'
-            cy='28'
-            rx='16'
-            ry='14'
-            fill='var(--logo-fill)'
-            stroke='#c9a96e'
-            strokeWidth='0.5'
-          />
-          <polygon
-            points='26,18 22,6 34,16'
-            fill='var(--logo-fill)'
-            stroke='#c9a96e'
-            strokeWidth='0.5'
-          />
-          <polygon
-            points='54,18 58,6 46,16'
-            fill='var(--logo-fill)'
-            stroke='#c9a96e'
-            strokeWidth='0.5'
-          />
-          <polygon points='27,17 24,9 33,16' fill='var(--logo-ear)' />
-          <polygon points='53,17 56,9 47,16' fill='var(--logo-ear)' />
-          <ellipse cx='34' cy='27' rx='3.5' ry='4.5' fill='#c9a96e' />
-          <ellipse cx='46' cy='27' rx='3.5' ry='4.5' fill='#c9a96e' />
-          <ellipse cx='34' cy='28' rx='1.5' ry='3.5' fill='var(--logo-fill)' />
-          <ellipse cx='46' cy='28' rx='1.5' ry='3.5' fill='var(--logo-fill)' />
-          <polygon points='40,33 38,36 42,36' fill='#c9a96e' opacity='0.7' />
-          <line x1='24' y1='34' x2='37' y2='34' stroke='#c9a96e' strokeWidth='0.6' opacity='0.6' />
-          <line x1='24' y1='37' x2='37' y2='36' stroke='#c9a96e' strokeWidth='0.6' opacity='0.6' />
-          <line x1='56' y1='34' x2='43' y2='34' stroke='#c9a96e' strokeWidth='0.6' opacity='0.6' />
-          <line x1='56' y1='37' x2='43' y2='36' stroke='#c9a96e' strokeWidth='0.6' opacity='0.6' />
-          <path
-            d='M58,52 Q72,44 68,58 Q64,64 58,60'
-            fill='none'
-            stroke='#c9a96e'
-            strokeWidth='1.5'
-            strokeLinecap='round'
-          />
-          <path d='M36,8 Q38,4 42,5 Q38,6 38,10 Z' fill='#c9a96e' opacity='0.5' />
-        </svg>
-        <div className='logo-text'>
-          <span className='logo-name'>NEKO</span>
-          <span className='logo-sub'>STORE</span>
-        </div>
+        <img className='logo-mark' src='/brand/neko-logo-cat.png' alt='' aria-hidden='true' />
+        <img className='logo-wordmark' src='/brand/neko-logo-text.png' alt='Neko Store' />
       </button>
 
       <div className='navbar__links'>
@@ -108,21 +46,41 @@ export default function Navbar() {
 
       <div className='navbar__actions'>
         <ThemeToggle />
-        <button className='btn-icon' onClick={toggleNotif} title='Notificaciones' type='button'>
-          <svg
-            width='18'
-            height='18'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='currentColor'
-            strokeWidth='1.5'
-            aria-hidden='true'
-          >
-            <path d='M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9' />
-            <path d='M13.73 21a2 2 0 01-3.46 0' />
-          </svg>
-          {unreadCount > 0 && <span className='notif-badge'>{unreadCount}</span>}
-        </button>
+        {canInstall && (
+          <button className='btn-install' onClick={install} title='Instalar app' type='button'>
+            <svg
+              width='18'
+              height='18'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='currentColor'
+              strokeWidth='1.5'
+              aria-hidden='true'
+            >
+              <path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4' />
+              <polyline points='7 10 12 15 17 10' />
+              <line x1='12' y1='15' x2='12' y2='3' />
+            </svg>
+            <span>Instalar app</span>
+          </button>
+        )}
+        {token && (
+          <button className='btn-icon' onClick={toggleNotif} title='Notificaciones' type='button'>
+            <svg
+              width='18'
+              height='18'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='currentColor'
+              strokeWidth='1.5'
+              aria-hidden='true'
+            >
+              <path d='M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9' />
+              <path d='M13.73 21a2 2 0 01-3.46 0' />
+            </svg>
+            {unreadCount > 0 && <span className='notif-badge'>{unreadCount}</span>}
+          </button>
+        )}
         <button
           className='btn-icon'
           onClick={() => navigate('/cuenta')}
@@ -142,7 +100,7 @@ export default function Navbar() {
             <circle cx='12' cy='7' r='4' />
           </svg>
         </button>
-        <button className='btn-icon cart-btn' onClick={toggleCart} title='Carrito' type='button'>
+        <button className='btn-icon' onClick={toggleCart} title='Carrito' type='button'>
           <svg
             width='18'
             height='18'

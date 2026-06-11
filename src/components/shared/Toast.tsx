@@ -21,5 +21,9 @@ export default function Toast() {
   const message = useToastStore((s) => s.message)
   const visible = useToastStore((s) => s.visible)
 
-  return <div className={`toast ${visible ? 'show' : ''}`}>{message}</div>
+  return (
+    <div className={`toast ${visible ? 'show' : ''}`} role='alert' aria-live='polite'>
+      {message}
+    </div>
+  )
 }

@@ -9,6 +9,7 @@ interface UIState {
   isCheckoutModalOpen: boolean
   activeSection: string
   activeFilter: Category | 'all'
+  activeProductId: string | number | null
   isDark: boolean
   toggleCart: () => void
   openCart: () => void
@@ -20,6 +21,7 @@ interface UIState {
   closeCheckoutModal: () => void
   setActiveSection: (section: string) => void
   setActiveFilter: (filter: Category | 'all') => void
+  selectProduct: (id: string | number) => void
   toggleTheme: () => void
   setTheme: (dark: boolean) => void
   closeAllModals: () => void
@@ -34,6 +36,7 @@ export const useUIStore = create<UIState>()(
       isCheckoutModalOpen: false,
       activeSection: 'home',
       activeFilter: 'all',
+      activeProductId: null,
       isDark: true,
 
       toggleCart: () => set((state) => ({ isCartOpen: !state.isCartOpen })),
@@ -42,12 +45,13 @@ export const useUIStore = create<UIState>()(
 
       toggleNotif: () => set((state) => ({ isNotifOpen: !state.isNotifOpen })),
       openProductModal: () => set({ isProductModalOpen: true }),
-      closeProductModal: () => set({ isProductModalOpen: false }),
+      closeProductModal: () => set({ isProductModalOpen: false, activeProductId: null }),
       openCheckoutModal: () => set({ isCheckoutModalOpen: true }),
       closeCheckoutModal: () => set({ isCheckoutModalOpen: false }),
 
       setActiveSection: (section) => set({ activeSection: section }),
       setActiveFilter: (filter) => set({ activeFilter: filter }),
+      selectProduct: (id) => set({ activeProductId: id }),
 
       toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
       setTheme: (dark) => set({ isDark: dark }),

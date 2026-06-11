@@ -63,10 +63,31 @@ export const api = {
     get: (id: string) => api.get<{ product: unknown }>(`/products/${id}`),
   },
 
+  contact: {
+    send: (data: {
+      name: string
+      phone?: string
+      email?: string
+      subject: string
+      message: string
+    }) => api.post<{ message: unknown }>('/contact', data),
+  },
+
   customers: {
     me: () => api.get<{ customer: unknown }>('/customers/me'),
     update: (data: { name?: string; email?: string; address?: string }) =>
       api.put<{ customer: unknown }>('/customers/me', data),
+  },
+
+  notifications: {
+    list: () => api.get<{ notifications: unknown[] }>('/notifications'),
+    markRead: (id: string) => api.put<{ notification: unknown }>(`/notifications/${id}/read`),
+  },
+
+  push: {
+    publicKey: () => api.get<{ enabled: boolean; publicKey: string }>('/push/vapid-public-key'),
+    subscribe: (subscription: PushSubscriptionJSON) =>
+      api.post<{ ok: boolean; id: string }>('/push/subscribe', { subscription }),
   },
 
   orders: {
@@ -132,6 +153,14 @@ export const api = {
       create: (data: unknown) => api.post<{ notification: unknown }>('/admin/notifications', data),
       markRead: (id: string) =>
         api.put<{ notification: unknown }>(`/admin/notifications/${id}/read`),
+    },
+    contactMessages: {
+      list: (status?: string) =>
+        api.get<{ messages: unknown[] }>(
+          `/admin/contact-messages${status ? `?status=${status}` : ''}`,
+        ),
+      update: (id: string, data: { status?: string; admin_notes?: string }) =>
+        api.put<{ message: unknown }>(`/admin/contact-messages/${id}`, data),
     },
   },
 }

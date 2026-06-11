@@ -7,7 +7,7 @@ function notificationId() {
 export default async function adminNotificationsRoutes(app) {
   app.get('/', { onRequest: [app.requireAdmin] }, async (request, reply) => {
     const result = await pool.query(
-      'SELECT * FROM notifications ORDER BY created_at DESC LIMIT 50',
+      "SELECT * FROM notifications WHERE for_role = 'admin' ORDER BY created_at DESC LIMIT 50",
     )
     reply.send({ notifications: result.rows })
   })

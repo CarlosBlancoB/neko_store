@@ -1,8 +1,11 @@
+import { useAuthStore } from '@/stores/authStore'
 import { useNotificationStore } from '@/stores/notificationStore'
 import { useUIStore } from '@/stores/uiStore'
 
 export default function NotificationsPanel() {
-  const { notifications, dismiss, markRead, clearAll, markAllRead } = useNotificationStore()
+  const { notifications, dismiss, clearAll, markAllRead, apiMarkRead } = useNotificationStore()
+  const token = useAuthStore((s) => s.token)
+  const role = useAuthStore((s) => s.currentCustomer?.role ?? 'customer')
   const isOpen = useUIStore((s) => s.isNotifOpen)
   const toggle = useUIStore((s) => s.toggleNotif)
 
@@ -10,6 +13,8 @@ export default function NotificationsPanel() {
     toggle()
     if (!isOpen) markAllRead()
   }
+
+  if (!token) return null
 
   return (
     <>
@@ -22,12 +27,12 @@ export default function NotificationsPanel() {
       <div className={`notif-panel ${isOpen ? 'open' : ''}`}>
         <div className='notif-header'>
           <h3>Notificaciones</h3>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div className='notif-header-actions'>
             <button className='notif-clear' onClick={clearAll} type='button'>
               Limpiar todo
             </button>
             <button onClick={handleToggle} className='modal-close-inline' type='button'>
-              ✕
+              x
             </button>
           </div>
         </div>
@@ -51,29 +56,32 @@ export default function NotificationsPanel() {
             </div>
           ) : (
             notifications.map((n, i) => (
-              <button
-                key={n.id}
-                className={`notif-item ${n.read ? '' : 'unread'}`}
-                onClick={() => markRead(i)}
-                type='button'
-              >
+              <div key={n.id} className={`notif-item ${n.read ? '' : 'unread'}`}>
                 <div className='notif-item__icon'>{n.icon}</div>
                 <div className='notif-item__body'>
                   <div className='notif-item__title'>{n.title}</div>
                   <div className='notif-item__msg'>{n.msg}</div>
                   <div className='notif-item__time'>{n.time}</div>
                 </div>
+                {!n.read && (
+                  <button
+                    className='notif-item__dismiss'
+                    onClick={() => apiMarkRead(n.id, role)}
+                    type='button'
+                    aria-label='Marcar como leida'
+                  >
+                    Leida
+                  </button>
+                )}
                 <button
                   className='notif-item__dismiss'
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    dismiss(i)
-                  }}
+                  onClick={() => dismiss(i)}
                   type='button'
+                  aria-label='Eliminar notificacion'
                 >
-                  ✕
+                  x
                 </button>
-              </button>
+              </div>
             ))
           )}
         </div>

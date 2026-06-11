@@ -23,8 +23,8 @@ export default function ContactInfoStrip() {
       <div className='contact-info-item'>
         <span>📍</span>
         <div>
-          <strong>Ubicación</strong>
-          <p>San José, Costa Rica</p>
+          <strong>Ubicacion</strong>
+          <p>San Ramon de Alajuela, Costa Rica</p>
         </div>
       </div>
       <div className='contact-info-item'>

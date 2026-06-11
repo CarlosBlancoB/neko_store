@@ -2,4 +2,10 @@ node_modules/
 .codegraph/
 _bmad-output/
 dist/
+coverage/
+*.log
+*.err.log
+.env
+backend/.env
+tsconfig.tsbuildinfo
 .DS_Store

@@ -12,7 +12,7 @@ const CATEGORIES: Array<{ value: Category; label: string }> = [
   { value: 'accesorios', label: 'Accesorios' },
 ]
 
-type AdminView = 'products' | 'stock' | 'images'
+type AdminView = 'products' | 'featured' | 'stock' | 'images'
 
 type Draft = {
   name: string
@@ -26,6 +26,8 @@ type Draft = {
   sizes: string
   images: string[]
   active: boolean
+  featured: boolean
+  featuredSortOrder: string
 }
 
 const emptyDraft: Draft = {
@@ -40,6 +42,8 @@ const emptyDraft: Draft = {
   sizes: '',
   images: [],
   active: true,
+  featured: false,
+  featuredSortOrder: '0',
 }
 
 function toDraft(product: Product): Draft {
@@ -55,6 +59,8 @@ function toDraft(product: Product): Draft {
     sizes: product.sizes.join(', '),
     images: product.images ?? [],
     active: product.active ?? true,
+    featured: product.featured ?? false,
+    featuredSortOrder: String(product.featuredSortOrder ?? 0),
   }
 }
 
@@ -74,6 +80,8 @@ function toPayload(draft: Draft) {
       .filter(Boolean),
     images: draft.images,
     active: draft.active,
+    featured: draft.featured,
+    featured_sort_order: Number(draft.featuredSortOrder),
   }
 }
 
@@ -108,6 +116,7 @@ export default function ProductManager() {
   const stats = useMemo(() => {
     const totalStock = products.reduce((sum, product) => sum + (product.stock ?? 0), 0)
     const active = products.filter((product) => product.active !== false).length
+    const featured = products.filter((product) => product.featured).length
     const lowProducts = products.filter(
       (product) => (product.stock ?? 0) <= (product.lowStockThreshold ?? 5),
     )
@@ -115,7 +124,7 @@ export default function ProductManager() {
       (sum, product) => sum + (product.stock ?? 0) * Number(product.price ?? 0),
       0,
     )
-    return { totalStock, active, lowProducts, value }
+    return { totalStock, active, featured, lowProducts, value }
   }, [products])
 
   const updateDraft = <K extends keyof Draft>(key: K, value: Draft[K]) => {
@@ -186,6 +195,20 @@ export default function ProductManager() {
     await fetchAdminProducts()
   }
 
+  const handleFeaturedUpdate = async (
+    product: Product,
+    next: { featured?: boolean; featured_sort_order?: number },
+  ) => {
+    setNotice('')
+    try {
+      await api.admin.products.update(String(product.id), next)
+      await fetchAdminProducts()
+      setNotice('Destacados del home actualizados.')
+    } catch (err) {
+      setNotice(err instanceof Error ? err.message : 'No se pudo actualizar destacados.')
+    }
+  }
+
   if (loading && products.length === 0) {
     return <div className='admin-panel-empty'>Cargando inventario desde la API...</div>
   }
@@ -200,6 +223,13 @@ export default function ProductManager() {
           type='button'
         >
           Todos los productos
+        </button>
+        <button
+          className={activeView === 'featured' ? 'active' : ''}
+          onClick={() => setActiveView('featured')}
+          type='button'
+        >
+          Destacados home
         </button>
         <button
           className={activeView === 'stock' ? 'active' : ''}
@@ -250,13 +280,57 @@ export default function ProductManager() {
             <span>Alertas stock bajo</span>
             <strong>{stats.lowProducts.length}</strong>
           </button>
+          <button onClick={() => setActiveView('featured')} type='button'>
+            <span>Destacados home</span>
+            <strong>{stats.featured}</strong>
+          </button>
           <div>
             <span>Valor potencial</span>
             <strong>₡{stats.value.toLocaleString('es-CR')}</strong>
           </div>
         </div>
 
-        {activeView === 'stock' ? (
+        {activeView === 'featured' ? (
+          <div className='wp-product-list'>
+            <div className='wp-product-list__head wp-product-list__head--featured'>
+              <span>Producto</span>
+              <span>Home</span>
+              <span>Orden</span>
+            </div>
+            {[...products]
+              .sort((a, b) => (a.featuredSortOrder ?? 0) - (b.featuredSortOrder ?? 0))
+              .map((product) => (
+                <div key={product.id} className='wp-product-row wp-product-row--static'>
+                  <span>
+                    <strong>{product.name}</strong>
+                    <small>{product.category}</small>
+                  </span>
+                  <label className='branding-toggle product-featured-toggle'>
+                    <input
+                      type='checkbox'
+                      checked={product.featured ?? false}
+                      onChange={(e) =>
+                        handleFeaturedUpdate(product, { featured: e.target.checked })
+                      }
+                    />
+                    Destacado
+                  </label>
+                  <input
+                    aria-label={`Orden de ${product.name} en home`}
+                    className='featured-order-input'
+                    type='number'
+                    min='0'
+                    value={product.featuredSortOrder ?? 0}
+                    onChange={(e) =>
+                      handleFeaturedUpdate(product, {
+                        featured_sort_order: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+              ))}
+          </div>
+        ) : activeView === 'stock' ? (
           <div className='wp-product-list'>
             <div className='wp-product-list__head'>
               <span>Producto</span>

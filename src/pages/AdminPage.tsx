@@ -5,6 +5,7 @@ import AssetManager from '@/components/admin/AssetManager'
 import BrandingConfig from '@/components/admin/BrandingConfig'
 import CampaignList from '@/components/admin/CampaignList'
 import CarouselEditor from '@/components/admin/CarouselEditor'
+import ContactMessagesManager from '@/components/admin/ContactMessagesManager'
 import ContentCalendar from '@/components/admin/ContentCalendar'
 import ContentEditor from '@/components/admin/ContentEditor'
 import EngagementMetrics from '@/components/admin/EngagementMetrics'
@@ -25,6 +26,7 @@ const TABS = [
   { id: 'inicio', label: 'Inicio' },
   { id: 'inventario', label: 'Productos' },
   { id: 'pedidos', label: 'Pedidos' },
+  { id: 'mensajes', label: 'Mensajes' },
   { id: 'notificaciones', label: 'Alertas' },
   { id: 'contenido', label: 'Contenido' },
   { id: 'carrusel', label: 'Carrusel' },
@@ -79,8 +81,7 @@ export default function AdminPage() {
   }
 
   const filteredPosts = postFilter === 'all' ? posts : posts.filter((p) => p.status === postFilter)
-  const mustSetup2FA = !twoFactor.enabled
-  const visibleTabs = mustSetup2FA ? TABS.filter((tab) => tab.id === '2fa') : TABS
+  const has2FA = twoFactor.enabled
 
   const getCampaignName = (campaignId: string) =>
     campaigns.find((c) => c.id === campaignId)?.name ?? ''
@@ -104,12 +105,12 @@ export default function AdminPage() {
         </button>
       </div>
       <div className='admin-tabs' role='tablist' aria-label='Secciones de administración'>
-        {visibleTabs.map((tab) => (
+        {TABS.map((tab) => (
           <button
             key={tab.id}
             role='tab'
-            aria-selected={mustSetup2FA ? tab.id === '2fa' : activeTab === tab.id}
-            className={`admin-tab ${mustSetup2FA || activeTab === tab.id ? 'active' : ''}`}
+            aria-selected={activeTab === tab.id}
+            className={`admin-tab ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => setActiveTab(tab.id)}
             type='button'
           >
@@ -118,22 +119,20 @@ export default function AdminPage() {
         ))}
       </div>
       <div className='admin-content' role='tabpanel'>
-        {mustSetup2FA && (
-          <>
-            <div className='admin-notice'>2FA es obligatorio antes de usar el panel admin.</div>
-            <TwoFactorSetup />
-          </>
+        {!has2FA && activeTab !== '2fa' && (
+          <div className='admin-notice'>2FA esta disponible como proteccion opcional.</div>
         )}
-        {!mustSetup2FA && activeTab === 'inicio' && <AdminHome onNavigate={setActiveTab} />}
-        {!mustSetup2FA && activeTab === 'branding' && <BrandingConfig />}
-        {!mustSetup2FA && activeTab === 'pedidos' && <OrdersManager />}
-        {!mustSetup2FA && activeTab === 'notificaciones' && <NotificationsConfig />}
-        {!mustSetup2FA && activeTab === 'inventario' && <ProductManager />}
-        {!mustSetup2FA && activeTab === 'contenido' && <ContentEditor />}
-        {!mustSetup2FA && activeTab === 'carrusel' && <CarouselEditor />}
-        {!mustSetup2FA && activeTab === '2fa' && <TwoFactorSetup />}
-        {!mustSetup2FA && activeTab === 'rewards' && <RewardScoringView />}
-        {!mustSetup2FA && activeTab === 'campanas' && (
+        {activeTab === 'inicio' && <AdminHome onNavigate={setActiveTab} />}
+        {activeTab === 'branding' && <BrandingConfig />}
+        {activeTab === 'pedidos' && <OrdersManager />}
+        {activeTab === 'mensajes' && <ContactMessagesManager />}
+        {activeTab === 'notificaciones' && <NotificationsConfig />}
+        {activeTab === 'inventario' && <ProductManager />}
+        {activeTab === 'contenido' && <ContentEditor />}
+        {activeTab === 'carrusel' && <CarouselEditor />}
+        {activeTab === '2fa' && <TwoFactorSetup />}
+        {activeTab === 'rewards' && <RewardScoringView />}
+        {activeTab === 'campanas' && (
           <div className='social-dashboard'>
             <SocialConnect />
 

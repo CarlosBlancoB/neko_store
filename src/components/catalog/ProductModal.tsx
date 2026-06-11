@@ -1,39 +1,36 @@
 import { useState } from 'react'
 import Modal from '@/components/shared/Modal'
+import ProductImage from '@/components/shared/ProductImage'
 import SizePicker from '@/components/shared/SizePicker'
-import { PRODUCTS } from '@/data/products'
 import { useCartStore } from '@/stores/cartStore'
 import { useConfigStore } from '@/stores/configStore'
 import { useNotificationStore } from '@/stores/notificationStore'
+import { useProductStore } from '@/stores/productStore'
 import { useUIStore } from '@/stores/uiStore'
-import { picsumUrl } from '@/utils/formatters'
 
 export default function ProductModal() {
   const isOpen = useUIStore((s) => s.isProductModalOpen)
   const closeProductModal = useUIStore((s) => s.closeProductModal)
-  const activeSection = useUIStore((s) => s.activeSection)
+  const activeProductId = useUIStore((s) => s.activeProductId)
+  const products = useProductStore((s) => s.items)
   const addItem = useCartStore((s) => s.addItem)
   const pushNotif = useNotificationStore((s) => s.push)
   const currencySymbol = useConfigStore((s) => s.config.currencySymbol)
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
 
-  const _product = PRODUCTS.find((_p) => {
-    if (activeSection === 'shop') return true
-    return false
-  })
-  const current = PRODUCTS[0]
-
-  if (!current) return null
+  const current = products.find((p) => p.id === activeProductId) ?? null
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
-      pushNotif({
-        icon: '⚠️',
-        title: 'Selecciona una talla',
-        msg: 'Elige una talla antes de agregar al carrito',
-        type: 'warning',
-      })
+    if (!current || !selectedSize) {
+      if (!selectedSize) {
+        pushNotif({
+          icon: '⚠️',
+          title: 'Selecciona una talla',
+          msg: 'Elige una talla antes de agregar al carrito',
+          type: 'warning',
+        })
+      }
       return
     }
     addItem(current, selectedSize)
@@ -47,11 +44,22 @@ export default function ProductModal() {
     setSelectedSize(null)
   }
 
+  if (!current) return null
+
   return (
-    <Modal isOpen={isOpen} onClose={closeProductModal} className='product-modal'>
+    <Modal
+      isOpen={isOpen}
+      onClose={closeProductModal}
+      className='product-modal'
+      key={activeProductId}
+    >
       <div className='product-modal__inner'>
         <div className='product-modal__img'>
-          <img src={picsumUrl(current.imgSeed, 500, 667)} alt={current.name} />
+          <ProductImage
+            seed={current.imgSeed}
+            alt={current.name}
+            className='product-modal__img-tag'
+          />
         </div>
         <div className='product-modal__details'>
           <div className='product-modal__cat'>{current.category}</div>

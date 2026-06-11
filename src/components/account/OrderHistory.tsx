@@ -9,9 +9,7 @@ export default function OrderHistory({ orders }: OrderHistoryProps) {
     return (
       <div className='no-orders'>
         <p>Aún no has realizado ninguna orden.</p>
-        <p style={{ marginTop: '8px', fontSize: '13px' }}>
-          Explora el catálogo y encuentra tu próxima pieza.
-        </p>
+        <p>Explora el catálogo y encuentra tu próxima pieza.</p>
       </div>
     )
   }

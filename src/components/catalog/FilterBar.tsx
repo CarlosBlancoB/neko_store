@@ -14,7 +14,7 @@ export default function FilterBar() {
   const setActiveFilter = useUIStore((s) => s.setActiveFilter)
 
   return (
-    <div className='filter-bar'>
+    <search className='filter-bar' aria-label='Filtrar productos'>
       {FILTERS.map((f) => (
         <button
           key={f.value}
@@ -25,6 +25,6 @@ export default function FilterBar() {
           {f.label}
         </button>
       ))}
-    </div>
+    </search>
   )
 }

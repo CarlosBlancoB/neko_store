@@ -1,4 +1,4 @@
-import { TIERS } from '@/data/tiers'
+import { useLoyaltyDataStore } from '@/stores/loyaltyDataStore'
 
 const TIER_ICONS: Record<string, string> = {
   MORTAL: '🌑',
@@ -30,9 +30,10 @@ const TIER_BENEFITS: Record<string, string[]> = {
 }
 
 export default function TierGrid() {
+  const tiers = useLoyaltyDataStore((s) => s.tiers)
   return (
     <div className='tiers-grid'>
-      {TIERS.map((tier) => (
+      {tiers.map((tier) => (
         <div
           key={tier.name}
           className={`tier-card ${tier.name === 'ECLIPSE' ? 'featured-tier' : ''}`}
@@ -44,7 +45,10 @@ export default function TierGrid() {
             {tier.max === Infinity ? '+' : ` - ${tier.max.toLocaleString()}`} pts
           </p>
           <ul>
-            {(TIER_BENEFITS[tier.name] ?? []).map((b) => (
+            {(tier.benefits && tier.benefits.length > 0
+              ? tier.benefits
+              : (TIER_BENEFITS[tier.name] ?? [])
+            ).map((b) => (
               <li key={b}>{b}</li>
             ))}
           </ul>

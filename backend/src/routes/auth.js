@@ -46,6 +46,9 @@ export default async function authRoutes(app) {
     if (!row) {
       return reply.code(401).send({ error: 'Credenciales invalidas' })
     }
+    if (row.role !== 'admin') {
+      return reply.code(403).send({ error: 'Clientes ingresan con codigo OTP por WhatsApp' })
+    }
 
     const valid = await bcrypt.compare(password, row.password_hash)
     if (!valid) {

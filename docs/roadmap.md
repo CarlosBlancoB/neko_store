@@ -1,5 +1,24 @@
 # NEKO STORE — Roadmap de Migración
 
+## Checkpoint de roadmap - 2026-06-10
+
+CodeGraph confirma que el proyecto ya paso el tramo de migracion base:
+- Fase 0: funcionalmente completa.
+- Fase 1: completa en stores/tipos, con extensiones API-backed.
+- Fase 2: componentes principales migrados; pendiente hardening responsive/a11y.
+- Fase 3: PWA base implementada; pendiente Lighthouse/offline QA.
+- Fase 4: WhatsApp deep links/templates implementados; pendiente operacion real de pedidos.
+- Fase 5: pagos directos siguen futuro; SINPE manual queda como operacion prioritaria.
+- Fase 6: admin adelantado, pero sin QA integral.
+- Fase 7: fase activa actual.
+
+Orden recomendado de ejecucion:
+1. QA gates: Biome, typecheck, tests, build.
+2. Auth cliente: registro/login OTP sin bypass.
+3. Pedidos: `pending_payment`, reserva TTL, alerta admin, confirmacion/rechazo SINPE.
+4. Responsive/a11y: 320px+, modales, navbar, dashboard admin.
+5. Social/branding: terminar solo despues de estabilizar checkout y auth.
+
 ## Fase 0: Discovery & Foundation
 **Objetivo:** Establecer el scaffold del proyecto React, toolchain, tema base y PWA manifest.
 
@@ -148,6 +167,29 @@
 
 ---
 
+## Fase 7: Responsive Hardening + Operacion de Pedidos
+**Objetivo:** Cerrar pendientes responsive y robustecer el flujo real de compra/pago con reservas de stock, alertas y verificacion admin.
+
+| Tarea | Dependencia | Esfuerzo | Criterio de Aceptación |
+|-------|-------------|----------|------------------------|
+| Auditoría responsive completa (320px+) | Fase 2 | M | Navbar, grids, modales y dashboard funcionan sin desbordes |
+| Corregir margen residual al ocultar Drop Counter | Auditoría responsive | S | Navbar no deja espacios vacíos al ocultar el componente |
+| Gestión de Drop Counter desde dashboard | Fase 6 | M | Admin puede configurar visibilidad y contenido de drops |
+| Sección de promociones con drops temporales | Fase 2 | L | Muestra promociones activas con caducidad y recomendaciones |
+| Registro mínimo + OTP WhatsApp | Fase 1 | M | Registro exige nombre, apellidos, edad y teléfono; OTP obligatorio |
+| Login por código enviado a WhatsApp | Registro OTP | M | Sesión solo se crea después de verificar código |
+| Centro de alertas cliente/admin (retención 7 días) | Fase 6 | M | Alertas visibles con detalle, borrado manual y purga automática |
+| Reserva de stock “en el aire” durante compra | Fase 6 | L | Stock se bloquea temporalmente y evita sobreventa |
+| Confirmación manual de comprobante SINPE | Reserva de stock | M | Admin confirma pago y el stock se descuenta definitivo |
+| Automatización opcional con WhatsApp Business | Confirmación manual | L | Detección automática genera alerta, sin quitar aprobación manual |
+| Fallback sin WhatsApp Business | Confirmación manual | M | Flujo completo sigue operando con alertas internas en app |
+
+**Esfuerzo total:** 19 (S=1, M=7, L=3)
+**Dependencias externas:** WhatsApp Business (solo para automatización opcional)
+**Riesgos:** Alto — concurrencia de stock y coordinación operativa de pedidos
+
+---
+
 ## Resumen de Esfuerzo
 
 | Fase | S | M | L | XL | Total |
@@ -159,7 +201,8 @@
 | Fase 4 | 6 | 2 | 0 | 0 | 10 |
 | Fase 5 | 2 | 2 | 2 | 1 | 20 |
 | Fase 6 | 0 | 3 | 3 | 1 | 24 |
-| **Total** | **24** | **24** | **9** | **2** | **112** |
+| Fase 7 | 1 | 7 | 3 | 0 | 19 |
+| **Total** | **25** | **31** | **12** | **2** | **131** |
 
 ## Timeline Estimado
 | Fase | Duración | Dependencia |
@@ -171,3 +214,4 @@
 | Fase 4 | 1 semana | Fase 1, Fase 2 |
 | Fase 5 | 4 semanas | Fase 2 |
 | Fase 6 | 4 semanas | Fase 1, Fase 2 |
+| Fase 7 | 3 semanas | Fase 2, Fase 6 |

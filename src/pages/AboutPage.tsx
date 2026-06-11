@@ -1,11 +1,27 @@
-import { GOTHIC_IMAGES } from '@/data/products'
+import usePageMeta from '@/hooks/usePageMeta'
+import { useCMSStore } from '@/stores/cmsStore'
 
 export default function AboutPage() {
+  const getContentValue = useCMSStore((s) => s.getContentValue)
+  const getContentImage = useCMSStore((s) => s.getContentImage)
+  const heroImage = getContentImage('about', 'hero_image') ?? '/brand/nosotros.png'
+  const body1 =
+    getContentValue('about', 'body_1') ||
+    'Neko Store nace en San Ramon de Alajuela para hacer la moda alternativa mas accesible en Costa Rica. Importamos y vendemos ropa seleccionada para quienes buscan estilo propio sin perder calidad.'
+  const body2 =
+    getContentValue('about', 'body_2') ||
+    'Queremos construir una familia, no solo una lista de clientes. Por eso combinamos una experiencia cercana con rewards que devuelven valor a la lealtad de nuestra comunidad.'
+
+  usePageMeta({
+    title: 'Nosotros',
+    description:
+      'Conoce la historia de Neko Store, tienda de San Ramon de Alajuela que importa y vende moda alternativa en Costa Rica.',
+  })
   return (
     <div className='section active section-block'>
       <div className='about-hero-img'>
         <img
-          src={GOTHIC_IMAGES.aboutneko}
+          src={heroImage}
           alt='Neko Store'
           style={{ width: '100%', maxHeight: '400px', objectFit: 'cover' }}
         />
@@ -13,36 +29,29 @@ export default function AboutPage() {
       </div>
       <div className='about-grid'>
         <div className='about-text'>
-          <p>
-            Neko Store nace de la necesidad de un espacio donde la moda oscura sea accesible en
-            Costa Rica. Desde San José, curamos y diseñamos piezas que abrazan la sombra en cada uno
-            de nosotros.
-          </p>
-          <p>
-            Creemos que la ropa es una extensión del alma. Cada prenda en nuestro catálogo ha sido
-            seleccionada por su calidad, diseño y capacidad de contar una historia.
-          </p>
+          <p>{body1}</p>
+          <p>{body2}</p>
         </div>
         <div className='about-values'>
           <div className='value-item'>
             <span>✦</span>
             <div>
-              <h4>Hecho con Propósito</h4>
-              <p>Cada prenda es elegida por su significado y artesanía.</p>
+              <h4>Seleccion Curada</h4>
+              <p>Importamos y elegimos cada prenda por su estilo, calidad y durabilidad.</p>
             </div>
           </div>
           <div className='value-item'>
             <span>✦</span>
             <div>
-              <h4>Raíces Ticas</h4>
-              <p>Operamos desde San José, con envíos a todo Costa Rica.</p>
+              <h4>Raices de San Ramon</h4>
+              <p>Operamos desde San Ramon de Alajuela, con envios a todo Costa Rica.</p>
             </div>
           </div>
           <div className='value-item'>
             <span>✦</span>
             <div>
-              <h4>Comunidad Oscura</h4>
-              <p>Más que una tienda, un refugio para almas afines.</p>
+              <h4>Equipo Multidisciplinario</h4>
+              <p>Somos un equipo de personas en software, marketing, diseno y operaciones.</p>
             </div>
           </div>
         </div>

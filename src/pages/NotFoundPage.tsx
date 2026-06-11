@@ -1,7 +1,13 @@
 import { useNavigate } from 'react-router-dom'
+import usePageMeta from '@/hooks/usePageMeta'
 
 export default function NotFoundPage() {
   const navigate = useNavigate()
+
+  usePageMeta({
+    title: '404 · Página no encontrada',
+    description: 'La página que buscas no existe. Regresa al inicio de Neko Store.',
+  })
 
   return (
     <div

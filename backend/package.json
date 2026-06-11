@@ -1,0 +1,27 @@
+{
+  "name": "neko-store-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate": "node run-migrations.js",
+    "seed": "node run-seeds.js",
+    "setup": "node run-migrations.js && node run-seeds.js",
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.0.0",
+    "@fastify/jwt": "^9.0.0",
+    "@fastify/multipart": "^9.0.0",
+    "@fastify/static": "^9.1.3",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.4.0",
+    "fastify": "^5.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "otplib": "^12.0.0",
+    "pg": "^8.13.0",
+    "qrcode": "^1.5.0",
+    "web-push": "^3.6.7",
+    "zod": "^3.24.0"
+  }
+}

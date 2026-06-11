@@ -9,6 +9,19 @@
     "testing",
     "deployment"
   ],
-  "modules": [],
-  "createdAt": "2026-06-07"
+  "modules": [
+    "00-overview",
+    "01-migration-plan",
+    "02-cart-checkout",
+    "03-auth-account",
+    "04-loyalty-rewards",
+    "05-pwa",
+    "06-notifications",
+    "07-whatsapp-notifications",
+    "08-social-campaigns",
+    "09-branding-system",
+    "10-backend-postgresql"
+  ],
+  "createdAt": "2026-06-07",
+  "updatedAt": "2026-06-10"
 }

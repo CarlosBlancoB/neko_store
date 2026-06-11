@@ -1,4 +1,5 @@
 import Fastify from 'fastify'
+import 'dotenv/config'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
 import fastifyStatic from '@fastify/static'
@@ -8,6 +9,7 @@ import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
 import productsRoutes from './routes/products.js'
 import customersRoutes from './routes/customers.js'
+import contactRoutes from './routes/contact.js'
 import ordersRoutes from './routes/orders.js'
 import loyaltyRoutes from './routes/loyalty.js'
 import adminProductsRoutes from './routes/admin/products.js'
@@ -18,11 +20,14 @@ import adminMetricsRoutes from './routes/admin/metrics.js'
 import adminBrandingRoutes from './routes/admin/branding.js'
 import adminWaConfigRoutes from './routes/admin/waConfig.js'
 import adminNotificationsRoutes from './routes/admin/notifications.js'
+import adminContactMessagesRoutes from './routes/admin/contactMessages.js'
 import adminSiteContentRoutes from './routes/admin/siteContent.js'
 import adminCarouselRoutes from './routes/admin/carousel.js'
 import adminUploadRoutes from './routes/admin/upload.js'
 import admin2faRoutes from './routes/admin/2fa.js'
 import customerAuthRoutes from './routes/customerAuth.js'
+import notificationsRoutes from './routes/notifications.js'
+import pushRoutes from './routes/push.js'
 import pool from './db.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -59,10 +64,7 @@ app.decorate('requireAdmin', async function (request, reply) {
     ])
     const twoFactorEnabled = twoFactor.rows[0]?.enabled === true
 
-    if (!twoFactorEnabled) {
-      if (isTwoFactorRoute) return
-      return reply.code(403).send({ error: 'Configura 2FA antes de usar el panel admin' })
-    }
+    if (!twoFactorEnabled) return
 
     if (request.user.twoFactorVerified !== true) {
       if (isTwoFactorRoute) return
@@ -76,6 +78,7 @@ app.decorate('requireAdmin', async function (request, reply) {
 await app.register(authRoutes, { prefix: '/api/auth' })
 await app.register(productsRoutes, { prefix: '/api/products' })
 await app.register(customersRoutes, { prefix: '/api/customers' })
+await app.register(contactRoutes, { prefix: '/api/contact' })
 await app.register(ordersRoutes, { prefix: '/api/orders' })
 await app.register(loyaltyRoutes, { prefix: '/api/loyalty' })
 await app.register(adminProductsRoutes, { prefix: '/api/admin/products' })
@@ -86,11 +89,14 @@ await app.register(adminMetricsRoutes, { prefix: '/api/admin/metrics' })
 await app.register(adminBrandingRoutes, { prefix: '/api/admin/branding' })
 await app.register(adminWaConfigRoutes, { prefix: '/api/admin/wa-config' })
 await app.register(adminNotificationsRoutes, { prefix: '/api/admin/notifications' })
+await app.register(adminContactMessagesRoutes, { prefix: '/api/admin/contact-messages' })
 await app.register(adminSiteContentRoutes, { prefix: '/api/admin/site-content' })
 await app.register(adminCarouselRoutes, { prefix: '/api/admin/carousel' })
 await app.register(adminUploadRoutes, { prefix: '/api/admin/upload' })
 await app.register(admin2faRoutes, { prefix: '/api/admin/2fa' })
 await app.register(customerAuthRoutes, { prefix: '/api/customer-auth' })
+await app.register(notificationsRoutes, { prefix: '/api/notifications' })
+await app.register(pushRoutes, { prefix: '/api/push' })
 
 const PORT = Number(process.env.PORT) || 4000
 const HOST = process.env.HOST || '0.0.0.0'

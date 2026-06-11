@@ -28,7 +28,7 @@ export default function OrderSummary() {
           </span>
         </div>
       ))}
-      <div style={{ marginTop: '12px', borderTop: '1px solid var(--border)', paddingTop: '8px' }}>
+      <div className='order-summary-divider'>
         <div className='order-summary-item'>
           <span>Subtotal</span>
           <span>

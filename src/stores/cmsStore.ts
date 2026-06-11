@@ -12,6 +12,7 @@ interface CMSState {
   loading: boolean
   error: string | null
   fetchContent: () => Promise<void>
+  fetchPublicContent: () => Promise<void>
   updateContent: (
     section: string,
     key: string,
@@ -46,6 +47,15 @@ export const useCMSStore = create<CMSState>()(
           set({ content: res.content as SiteContent, loading: false })
         } catch (err) {
           set({ loading: false, error: (err as Error).message })
+        }
+      },
+
+      fetchPublicContent: async () => {
+        try {
+          const res = await cmsApi.content.getPublic()
+          set({ content: res.content as SiteContent })
+        } catch {
+          // Public content falls back to page defaults.
         }
       },
 

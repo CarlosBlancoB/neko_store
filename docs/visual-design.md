@@ -7,6 +7,19 @@ NEKO STORE es una tienda de moda gótica/alternativa con identidad oscura, elega
 
 **Palabras clave:** oscuro, elegante, místico, audaz, alternativo
 
+### Contexto de Marca
+- Origen: San Ramon de Alajuela, Costa Rica.
+- Operacion: importa y vende ropa; no produce la ropa internamente.
+- Proposito: tienda accesible que cuida a sus clientes y devuelve lealtad con rewards.
+- Voz: equipo multidisciplinario; usar “nosotros/equipo/personas”, no “nosotras”.
+- Comunidad: comunicar familia y cercania, no solo lista de clientes.
+
+### Logos Oficiales
+- Isotipo gato: `public/brand/neko-logo-cat.png`.
+- Wordmark texto: `public/brand/neko-logo-text.png`.
+- Ambos assets fueron procesados desde PNG negro sobre fondo blanco a PNG con fondo transparente.
+- En dark theme se puede invertir el wordmark con CSS; en light theme se usa el negro original.
+
 ---
 
 ## Tema: Dark & Light
@@ -92,10 +105,14 @@ NEKO STORE es una tienda de moda gótica/alternativa con identidad oscura, elega
 ### Font Families
 | Uso | Fuente | Fallback | Weight |
 |-----|--------|----------|--------|
-| Headings (h1-h3) | Megasord | serif | 400, 700 |
-| Body text | Cormorant Garamond | serif | 300, 400, 600 |
+| Headings (h1-h3) | Pentagram Malefissent | serif | 400 |
+| Body text | Open Sans | sans-serif | 300, 400, 600, 700 |
 | UI / Mono | Space Mono | monospace | 400, 700 |
-| Accent / Display | Megasord | serif | 700 |
+| Accent / Display | Pentagram Malefissent | serif | 400 |
+
+### Regla para Titulos Display
+- En textos renderizados con fuente display (`Pentagram Malefissent`) usar variantes sin tilde para evitar glifos faltantes.
+- Ejemplos: `Catalogo`, `Promociones`, `Sesion`, `Diseno`.
 
 ### Font Sizes
 ```css
@@ -114,13 +131,13 @@ NEKO STORE es una tienda de moda gótica/alternativa con identidad oscura, elega
 ### Type Scale Usage
 | Element | Size | Weight | Font |
 |---------|------|--------|------|
-| H1 | 5xl | 700 | Megasord |
-| H2 | 3xl | 700 | Megasord |
-| H3 | 2xl | 600 | Megasord |
-| H4 | xl | 600 | Cormorant |
-| Body | base | 400 | Cormorant |
-| Body small | sm | 400 | Cormorant |
-| Caption | xs | 400 | Cormorant |
+| H1 | 5xl | 400 | Pentagram Malefissent |
+| H2 | 3xl | 400 | Pentagram Malefissent |
+| H3 | 2xl | 400 | Pentagram Malefissent |
+| H4 | xl | 600 | Open Sans |
+| Body | base | 400 | Open Sans |
+| Body small | sm | 400 | Open Sans |
+| Caption | xs | 400 | Open Sans |
 | Button | base | 700 | Space Mono |
 | Price | lg | 700 | Space Mono |
 | Badge | xs | 700 | Space Mono |

@@ -23,7 +23,12 @@ export default function Modal({
         type='button'
         aria-label='Cerrar'
       />
-      <div className={`${className} ${isOpen ? 'active' : ''}`}>
+      <div
+        className={`${className} ${isOpen ? 'active' : ''}`}
+        role='dialog'
+        aria-modal='true'
+        aria-label='Detalle del producto'
+      >
         <button className='modal-close' onClick={onClose} type='button'>
           ✕
         </button>
