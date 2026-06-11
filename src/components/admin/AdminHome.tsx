@@ -27,7 +27,7 @@ export default function AdminHome({ onNavigate }: { onNavigate: (tab: string) =>
 
   const stats = useMemo(() => {
     const pendingOrders = orders.filter((order) =>
-      ['pending', 'pending_payment', 'paid_verified'].includes(order.status),
+      ['pending_payment', 'paid_verified', 'preparing'].includes(order.status),
     )
     const lowStock = products.filter(
       (product) => (product.stock ?? 0) <= (product.lowStockThreshold ?? 5),

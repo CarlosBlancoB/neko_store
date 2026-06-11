@@ -1,11 +1,19 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { api } from '@/services/api'
 import type { Customer } from '@/types/customer'
+import type { Order } from '@/types/order'
 
 interface AuthState {
   customers: Record<string, Customer>
+  currentCustomer: Customer | null
   currentPhone: string | null
+  token: string | null
   login: (phone: string) => boolean
+  setApiSession: (token: string, user: unknown) => void
+  fetchCurrentCustomer: () => Promise<void>
+  apiLogin: (phone: string, password: string) => Promise<boolean>
+  apiRegister: (name: string, phone: string, password: string) => Promise<boolean>
   logout: () => void
   register: (customer: Customer) => void
   updateCustomer: (phone: string, data: Partial<Customer>) => void
@@ -13,190 +21,147 @@ interface AuthState {
   seedDemoAccount: () => void
 }
 
+function mapOrder(order: Record<string, unknown>): Order {
+  const items = Array.isArray(order.items) ? (order.items as Record<string, unknown>[]) : []
+  return {
+    id: String(order.id),
+    items: items.map((item) => ({
+      product: {
+        id: String(item.product_id ?? item.id),
+        name: String(item.name ?? 'Producto'),
+        category: 'accesorios' as const,
+        price: Number(item.unit_price ?? 0),
+        imgSeed: String(item.image ?? item.product_id ?? 'neko-product'),
+        imageUrl: typeof item.image === 'string' ? item.image : undefined,
+        sizes: [],
+        description: '',
+        points: 0,
+      },
+      quantity: Number(item.quantity ?? 1),
+      size: String(item.size ?? ''),
+    })),
+    total: Number(order.total ?? 0),
+    shipping: Number(order.shipping_cost ?? 0),
+    shippingMethod: String(order.shipping_method ?? ''),
+    address: String(order.shipping_address ?? ''),
+    notes: String(order.notes ?? ''),
+    date: String(order.created_at ?? new Date().toISOString()),
+    pointsEarned: Number(order.points_earned ?? 0),
+    status:
+      order.status === 'completed' || order.status === 'confirmed' ? 'confirmado' : 'pendiente',
+  }
+}
+
+function mapCustomer(raw: unknown, orders: Order[] = []): Customer | null {
+  const u = raw as {
+    id?: string
+    name?: string
+    phone?: string
+    points?: number
+    tier?: string
+    total_spent?: number
+    totalSpent?: number
+    created_at?: string
+    joinedAt?: string
+    email?: string
+    address?: string
+    role?: 'customer' | 'admin'
+  }
+
+  if (!u.phone) return null
+
+  return {
+    id: u.id,
+    name: u.name ?? '',
+    phone: u.phone,
+    email: u.email,
+    address: u.address,
+    points: Number(u.points ?? 0),
+    tier: u.tier ?? 'MORTAL',
+    role: u.role ?? 'customer',
+    totalSpent: Number(u.totalSpent ?? u.total_spent ?? 0),
+    joinedAt: u.joinedAt ?? u.created_at ?? new Date().toISOString(),
+    notifSettings: { order: true, drop: true, points: true, rewards: true, offers: false },
+    orders,
+  }
+}
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       customers: {},
+      currentCustomer: null,
       currentPhone: null,
+      token: null,
 
-      login: (phone) => {
-        const { customers } = get()
-        if (customers[phone]) {
-          set({ currentPhone: phone })
-          return true
-        }
-        return false
-      },
+      login: () => false,
 
-      logout: () => set({ currentPhone: null }),
-
-      register: (customer) => {
-        set((state) => ({
-          customers: { ...state.customers, [customer.phone]: customer },
+      setApiSession: (token, user) => {
+        const customer = mapCustomer(user)
+        if (!customer) return
+        set({
+          token,
           currentPhone: customer.phone,
-        }))
-      },
-
-      updateCustomer: (phone, data) => {
-        set((state) => {
-          const existing = state.customers[phone]
-          if (!existing) return state
-          return {
-            customers: {
-              ...state.customers,
-              [phone]: { ...existing, ...data },
-            },
-          }
+          currentCustomer: customer,
         })
       },
 
-      getCurrentCustomer: () => {
-        const { customers, currentPhone } = get()
-        if (!currentPhone) return null
-        return customers[currentPhone] ?? null
+      fetchCurrentCustomer: async () => {
+        const { token } = get()
+        if (!token) return
+
+        const [profile, ordersRes] = await Promise.all([api.customers.me(), api.orders.list()])
+        const orders = (ordersRes.orders as Record<string, unknown>[]).map(mapOrder)
+        const customer = mapCustomer(profile.customer, orders)
+        if (!customer) {
+          set({ currentCustomer: null, currentPhone: null, token: null })
+          return
+        }
+
+        set({ currentPhone: customer.phone, currentCustomer: customer })
       },
 
-      seedDemoAccount: () => {
-        const { customers } = get()
-        const demoPhone = '24247171'
-        if (customers[demoPhone]) return
-        const demoCustomer: Customer = {
-          name: 'Valentina Neko',
-          phone: demoPhone,
-          points: 1620,
-          tier: 'ECLIPSE',
-          totalSpent: 487,
-          isDemo: true,
-          joinedAt: new Date(Date.now() - 90 * 86400000).toISOString(),
-          notifSettings: { order: true, drop: true, points: true, rewards: true, offers: false },
-          orders: [
-            {
-              id: 'NK-DEMO001',
-              items: [
-                {
-                  product: {
-                    id: 1,
-                    name: 'Vestido Shadow Bloom',
-                    category: 'vestidos' as const,
-                    price: 89,
-                    imgSeed: 'shadowbloom',
-                    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-                    description: '',
-                    points: 89,
-                    featured: true,
-                  },
-                  quantity: 1,
-                  size: 'M',
-                },
-                {
-                  product: {
-                    id: 4,
-                    name: 'Collar Moon Phase',
-                    category: 'accesorios' as const,
-                    price: 28,
-                    imgSeed: 'moonphase',
-                    sizes: ['Único'],
-                    description: '',
-                    isNew: true,
-                    points: 28,
-                    featured: true,
-                  },
-                  quantity: 1,
-                  size: 'Único',
-                },
-              ],
-              total: 117,
-              shipping: 0,
-              shippingMethod: 'Recogida en tienda',
-              address: 'San José, Costa Rica',
-              notes: '',
-              date: new Date(Date.now() - 60 * 86400000).toISOString(),
-              pointsEarned: 117,
-              status: 'confirmado',
-            },
-            {
-              id: 'NK-DEMO002',
-              items: [
-                {
-                  product: {
-                    id: 2,
-                    name: 'Corset Velvet Requiem',
-                    category: 'tops' as const,
-                    price: 65,
-                    imgSeed: 'velvet99',
-                    sizes: ['S', 'M', 'L'],
-                    description: '',
-                    badge: 'LIMITADO',
-                    points: 65,
-                    featured: true,
-                  },
-                  quantity: 1,
-                  size: 'S',
-                },
-                {
-                  product: {
-                    id: 7,
-                    name: 'Falda Eclipse',
-                    category: 'conjuntos' as const,
-                    price: 72,
-                    imgSeed: 'eclipse77',
-                    sizes: ['XS', 'S', 'M', 'L'],
-                    description: '',
-                    points: 72,
-                  },
-                  quantity: 1,
-                  size: 'M',
-                },
-              ],
-              total: 137,
-              shipping: 5,
-              shippingMethod: 'Envío estándar',
-              address: 'Heredia, Costa Rica',
-              notes: 'Empaque especial por favor',
-              date: new Date(Date.now() - 30 * 86400000).toISOString(),
-              pointsEarned: 130,
-              status: 'confirmado',
-            },
-            {
-              id: 'NK-DEMO003',
-              items: [
-                {
-                  product: {
-                    id: 10,
-                    name: 'Vestido Coven',
-                    category: 'vestidos' as const,
-                    price: 135,
-                    imgSeed: 'coven11',
-                    sizes: ['S', 'M', 'L'],
-                    description: '',
-                    badge: 'BESTSELLER',
-                    points: 135,
-                  },
-                  quantity: 1,
-                  size: 'M',
-                },
-              ],
-              total: 135,
-              shipping: 0,
-              shippingMethod: 'Recogida en tienda',
-              address: '',
-              notes: '',
-              date: new Date(Date.now() - 5 * 86400000).toISOString(),
-              pointsEarned: 135,
-              status: 'pendiente',
-            },
-          ],
+      apiLogin: async (phone, password) => {
+        try {
+          const res = await api.auth.login(phone, password)
+          if (!res.token) return false
+          const customer = mapCustomer(res.user)
+          if (!customer) return false
+          set({ token: res.token, currentPhone: customer.phone, currentCustomer: customer })
+          return true
+        } catch {
+          return false
         }
-        set((state) => ({
-          customers: { ...state.customers, [demoPhone]: demoCustomer },
-        }))
       },
+
+      apiRegister: async (name, phone, password) => {
+        try {
+          const res = await api.auth.register(name, phone, password)
+          const customer = mapCustomer(res.user)
+          if (!customer) return false
+          set({ token: res.token, currentPhone: customer.phone, currentCustomer: customer })
+          return true
+        } catch {
+          return false
+        }
+      },
+
+      logout: () => set({ currentCustomer: null, currentPhone: null, token: null }),
+
+      register: () => {},
+
+      updateCustomer: () => {},
+
+      getCurrentCustomer: () => get().currentCustomer,
+
+      seedDemoAccount: () => {},
     }),
     {
       name: 'nekoCustomers',
       partialize: (state) => ({
-        customers: state.customers,
+        currentCustomer: state.currentCustomer,
         currentPhone: state.currentPhone,
+        token: state.token,
       }),
     },
   ),

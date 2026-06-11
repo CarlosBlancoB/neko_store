@@ -73,11 +73,12 @@ export const api = {
     list: () => api.get<{ orders: unknown[] }>('/orders'),
     create: (data: {
       items: unknown[]
-      total: number
       shipping_address?: string
       shipping_method?: string
       shipping_cost?: number
       notes?: string
+      payment_method?: string
+      payment_reference?: string
     }) => api.post<{ order: unknown }>('/orders', data),
   },
 

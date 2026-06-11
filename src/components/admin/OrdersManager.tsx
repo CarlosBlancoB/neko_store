@@ -22,8 +22,9 @@ type AdminOrder = {
 }
 
 const STATUSES = [
-  { value: 'pending', label: 'Pendiente' },
-  { value: 'confirmed', label: 'Confirmado' },
+  { value: 'pending_payment', label: 'Pendiente SINPE' },
+  { value: 'paid_verified', label: 'Pago verificado' },
+  { value: 'preparing', label: 'En preparacion' },
   { value: 'shipped', label: 'Enviado' },
   { value: 'delivered', label: 'Entregado' },
   { value: 'cancelled', label: 'Cancelado' },
@@ -71,7 +72,7 @@ export default function OrdersManager() {
         <div>
           <p className='wp-admin-kicker'>Pedidos</p>
           <h2>Gestion de pedidos</h2>
-          <span>Revisa pagos, prepara envios y cambia estados desde la API.</span>
+          <span>Confirma SINPE, prepara envios y cambia estados desde la API.</span>
         </div>
         <div className='orders-toolbar'>
           <select

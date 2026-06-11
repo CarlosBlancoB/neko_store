@@ -1,8 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { TIERS } from '@/data/tiers'
+import { api } from '@/services/api'
 import type { CartItem } from '@/types/cart'
 import type { Product } from '@/types/product'
+import { useLoyaltyDataStore } from './loyaltyDataStore'
 
 interface CartState {
   items: CartItem[]
@@ -17,6 +18,11 @@ interface CartState {
   getSubtotal: () => number
   getDiscount: (customerPoints?: number) => number
   getTotal: (customerPoints?: number) => number
+  submitOrder: (data: {
+    address: string
+    notes?: string
+    paymentReference?: string
+  }) => Promise<{ ok: boolean; error?: string; order?: Record<string, unknown> }>
 }
 
 export const useCartStore = create<CartState>()(
@@ -71,6 +77,7 @@ export const useCartStore = create<CartState>()(
         get().items.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
       getDiscount: (customerPoints = 0) => {
         if (customerPoints <= 0) return 0
+        const TIERS = useLoyaltyDataStore.getState().tiers
         const tier = [...TIERS].reverse().find((t) => customerPoints >= t.min)
         return tier?.discount ?? 0
       },
@@ -78,6 +85,29 @@ export const useCartStore = create<CartState>()(
         const subtotal = get().getSubtotal()
         const discount = get().getDiscount(customerPoints)
         return subtotal * (1 - discount) + get().shippingCost
+      },
+      submitOrder: async ({ address, notes, paymentReference }) => {
+        const { items, shippingCost, shippingMethod } = get()
+        if (items.length === 0) return { ok: false, error: 'Carrito vacío' }
+        try {
+          const res = await api.orders.create({
+            items: items.map((i) => ({
+              product_id: i.product.id.toString(),
+              quantity: i.quantity,
+              size: i.size,
+            })),
+            shipping_address: address || 'Recogida en tienda',
+            shipping_method: shippingMethod,
+            shipping_cost: shippingCost,
+            notes: notes || '',
+            payment_method: 'sinpe_movil',
+            payment_reference: paymentReference || '',
+          })
+          get().clearCart()
+          return { ok: true, order: res.order as Record<string, unknown> }
+        } catch (e) {
+          return { ok: false, error: (e as Error).message }
+        }
       },
     }),
     {

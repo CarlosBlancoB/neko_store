@@ -6,6 +6,7 @@ interface CheckoutFormProps {
     canton: string
     district: string
     address: string
+    sinpeReference: string
     notes: string
   }
   onChange: (field: string, value: string) => void
@@ -89,6 +90,16 @@ export default function CheckoutForm({ form, onChange }: CheckoutFormProps) {
           value={form.notes}
           onChange={(e) => onChange('notes', e.target.value)}
           placeholder='Empaque especial, regalo, etc.'
+        />
+      </div>
+      <div className='form-group'>
+        <label htmlFor='checkout-sinpe-reference'>Referencia SINPE</label>
+        <input
+          id='checkout-sinpe-reference'
+          type='text'
+          value={form.sinpeReference}
+          onChange={(e) => onChange('sinpeReference', e.target.value)}
+          placeholder='Numero de comprobante o ultimos digitos'
         />
       </div>
     </>
